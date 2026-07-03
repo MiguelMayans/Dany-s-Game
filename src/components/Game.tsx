@@ -105,19 +105,17 @@ export default function Game() {
           </div>
         ) : null}
 
-        {/* Wrong-letter feedback bubble */}
-        {state.wrong && (
-          <div className="flex justify-center">
-            <div className="animate-bubble-pop relative rounded-full border-[4px] border-dan-border bg-dan-coral px-5 py-2 text-base sm:text-lg font-extrabold text-white shadow-[0_4px_0_var(--color-dan-border)]">
-              <span className="mr-1" aria-hidden="true">{state.wrongEmoji}</span>{state.wrongMessage}
-              <span className="absolute -bottom-[10px] left-1/2 -translate-x-1/2 h-0 w-0 border-x-[11px] border-t-[12px] border-x-transparent border-t-[var(--color-dan-border)]" aria-hidden="true" />
-              <span className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 h-0 w-0 border-x-[8px] border-t-[9px] border-x-transparent border-t-[var(--color-dan-coral)]" aria-hidden="true" />
-            </div>
-          </div>
-        )}
-
         {/* Word letters */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+        <div className="relative flex flex-wrap justify-center gap-2 sm:gap-3">
+          {state.wrong && (
+            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2">
+              <div className="animate-bubble-pop relative whitespace-nowrap rounded-full border-[4px] border-dan-border bg-dan-coral px-5 py-2 text-base sm:text-lg font-extrabold text-white shadow-[0_4px_0_var(--color-dan-border)]">
+                <span className="mr-1" aria-hidden="true">{state.wrongEmoji}</span>{state.wrongMessage}
+                <span className="absolute -bottom-[10px] left-1/2 -translate-x-1/2 h-0 w-0 border-x-[11px] border-t-[12px] border-x-transparent border-t-[var(--color-dan-border)]" aria-hidden="true" />
+                <span className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 h-0 w-0 border-x-[8px] border-t-[9px] border-x-transparent border-t-[var(--color-dan-coral)]" aria-hidden="true" />
+              </div>
+            </div>
+          )}
           {state.word.split('').map((ch, i) => {
             const isCorrect = i < state.pos;
             const isCurrentWrong = i === state.pos && state.wrong;
