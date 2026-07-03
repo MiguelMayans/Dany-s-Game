@@ -8,6 +8,20 @@ import { gameReducer, initialState } from '../reducers/gameReducer';
 
 const STORAGE_KEY = 'dan-game-progress-v2';
 
+const WRONG_EMOJIS = ['🙈', '🤪', '🐵', '😜', '🤔', '💥', '🐸', '🙊', '🤖', '🐙'];
+const WRONG_MESSAGES = [
+  '¡Casi, Dani!',
+  '¡Inténtalo otra vez!',
+  '¡Casi lo tienes!',
+  '¡Oops!',
+  '¡No era esa!',
+  '¡Tú puedes, Dani!',
+];
+
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 interface SavedProgress {
   date: string;
   streak: number;
@@ -145,7 +159,12 @@ export function useGame() {
       }, 660);
     } else {
       playWrongSound();
-      dispatch({ type: 'KEY_PRESS', key });
+      dispatch({
+        type: 'KEY_PRESS',
+        key,
+        wrongEmoji: pick(WRONG_EMOJIS),
+        wrongMessage: pick(WRONG_MESSAGES),
+      });
     }
   }, []);
 

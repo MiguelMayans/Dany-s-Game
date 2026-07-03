@@ -32,6 +32,8 @@ export interface GameState {
   pos: number;
   wrong: boolean;
   wrongIndex: number | null;
+  wrongEmoji: string;
+  wrongMessage: string;
   success: boolean;
   poppedIndex: number | null;
   sparks: Spark[];
@@ -46,7 +48,7 @@ export interface GameState {
 
 export type GameAction =
   | { type: 'START_LEVEL'; level: Level; words: string[] }
-  | { type: 'KEY_PRESS'; key: string; sparks?: Spark[] }
+  | { type: 'KEY_PRESS'; key: string; sparks?: Spark[]; wrongEmoji?: string; wrongMessage?: string }
   | { type: 'CLEAR_POP' }
   | { type: 'CLEAR_WRONG' }
   | { type: 'CLEAR_SPARKS'; ids: number[] }

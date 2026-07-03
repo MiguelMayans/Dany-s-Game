@@ -60,7 +60,6 @@ export const words = {
     { word: "cama", img: "/images/cama.svg" },
     { word: "mesa", img: "/images/mesa.svg" },
     { word: "silla", img: "/images/silla.svg" },
-    { word: "pipa", img: "/images/pipa.svg" },
     // — Juguetes y juego —
     { word: "pelota", img: "/images/pelota.svg" },
     { word: "bola", img: "/images/bola.svg" },
@@ -73,7 +72,31 @@ export const words = {
     // — Otros —
     { word: "estrella", img: "/images/estrella.svg" },
     { word: "mundo", img: "/images/mundo.svg" },
-    { word: "sola", img: "/images/sola.svg" },
+    // — Más animales —
+    { word: "zorro", img: "/images/zorro.svg" },
+    { word: "cabra", img: "/images/cabra.svg" },
+    { word: "cerdo", img: "/images/cerdo.svg" },
+    { word: "raton", img: "/images/raton.svg" },
+    { word: "erizo", img: "/images/erizo.svg" },
+    // — Más naturaleza —
+    { word: "hoja", img: "/images/hoja.svg" },
+    { word: "nido", img: "/images/nido.svg" },
+    { word: "seta", img: "/images/seta.svg" },
+    { word: "pino", img: "/images/pino.svg" },
+    // — Más comida —
+    { word: "huevo", img: "/images/huevo.svg" },
+    { word: "tomate", img: "/images/tomate.svg" },
+    { word: "pizza", img: "/images/pizza.svg" },
+    { word: "galleta", img: "/images/galleta.svg" },
+    { word: "miel", img: "/images/miel.svg" },
+    // — Más objetos —
+    { word: "diente", img: "/images/diente.svg" },
+    { word: "reloj", img: "/images/reloj.svg" },
+    { word: "robot", img: "/images/robot.svg" },
+    // — Más transporte —
+    { word: "moto", img: "/images/moto.svg" },
+    // — Personajes —
+    { word: "payaso", img: "/images/payaso.svg" },
   ],
 
   level2: [
@@ -114,6 +137,22 @@ export const words = {
     { word: "cohete", img: "/images/cohete.svg" },
     // — Emociones —
     { word: "corazon", img: "/images/corazon.svg" },
+    // — Más animales —
+    { word: "pinguino", img: "/images/pinguino.svg" },
+    { word: "delfin", img: "/images/delfin.svg" },
+    { word: "cangrejo", img: "/images/cangrejo.svg" },
+    { word: "calamar", img: "/images/calamar.svg" },
+    { word: "caracol", img: "/images/caracol.svg" },
+    { word: "koala", img: "/images/koala.svg" },
+    { word: "panda", img: "/images/panda.svg" },
+    { word: "mapache", img: "/images/mapache.svg" },
+    { word: "caballo", img: "/images/caballo.svg" },
+    { word: "unicornio", img: "/images/unicornio.svg" },
+    // — Personajes y fantasía —
+    { word: "fantasma", img: "/images/fantasma.svg" },
+    { word: "esqueleto", img: "/images/esqueleto.svg" },
+    { word: "ninja", img: "/images/ninja.svg" },
+    { word: "reina", img: "/images/reina.svg" },
   ],
 };
 export default words;

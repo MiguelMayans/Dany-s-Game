@@ -3,11 +3,10 @@ import type { ReactNode } from 'react';
 interface LetterProps {
   char: string;
   state?: 'default' | 'correct' | 'wrong' | 'pop';
-  showWrongEmoji?: boolean;
   children?: ReactNode;
 }
 
-export default function Letter({ char, state = 'default', showWrongEmoji = false, children }: LetterProps) {
+export default function Letter({ char, state = 'default', children }: LetterProps) {
   const baseClasses = [
     'relative inline-flex items-center justify-center',
     'min-w-[clamp(48px,9vw,120px)] h-[clamp(72px,14vw,140px)]',
@@ -28,14 +27,6 @@ export default function Letter({ char, state = 'default', showWrongEmoji = false
   return (
     <span className={[...baseClasses, stateClasses[state]].join(' ')}>
       {char.toUpperCase()}
-      {showWrongEmoji && (
-        <span
-          className="absolute -top-12 left-1/2 text-4xl animate-emoji-pop"
-          aria-hidden="true"
-        >
-          🙈
-        </span>
-      )}
       {children}
     </span>
   );

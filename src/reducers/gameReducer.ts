@@ -7,6 +7,8 @@ export const initialState: GameState = {
   pos: 0,
   wrong: false,
   wrongIndex: null,
+  wrongEmoji: '🙈',
+  wrongMessage: '¡Casi!',
   success: false,
   poppedIndex: null,
   sparks: [],
@@ -63,6 +65,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         wrong: true,
         wrongIndex: state.pos,
+        wrongEmoji: action.wrongEmoji ?? state.wrongEmoji,
+        wrongMessage: action.wrongMessage ?? state.wrongMessage,
       };
     }
     case 'CLEAR_POP':
