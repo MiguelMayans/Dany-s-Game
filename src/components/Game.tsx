@@ -59,6 +59,8 @@ export default function Game() {
   }
 
   const entry = findWordEntry(state.word);
+  const hintLetter =
+    state.wrongCount >= 3 && state.pos < state.word.length ? state.word[state.pos] : null;
 
   return (
     <div className="flex min-h-screen items-center justify-center p-3 sm:p-4">
@@ -155,6 +157,7 @@ export default function Game() {
             markUserInteraction();
             handleKeyPress(k);
           }}
+          hintLetter={hintLetter}
         />
 
         <p className="text-center text-sm font-bold text-dan-muted">

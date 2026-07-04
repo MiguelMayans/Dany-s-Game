@@ -2,6 +2,7 @@ interface KeyProps {
   letter: string;
   onPress: (letter: string) => void;
   colorIndex?: number;
+  hint?: boolean;
 }
 
 const keyColors = [
@@ -14,7 +15,7 @@ const keyColors = [
   'bg-key-blue',
 ];
 
-export default function Key({ letter, onPress, colorIndex = 0 }: KeyProps) {
+export default function Key({ letter, onPress, colorIndex = 0, hint = false }: KeyProps) {
   const colorClass = keyColors[colorIndex % keyColors.length];
 
   return (
@@ -30,6 +31,7 @@ export default function Key({ letter, onPress, colorIndex = 0 }: KeyProps) {
         'hover:-translate-y-1 hover:scale-105 hover:brightness-105',
         'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-dan-blue/50',
         colorClass,
+        hint ? 'animate-hint-pulse z-10' : '',
       ].join(' ')}
     >
       {letter}

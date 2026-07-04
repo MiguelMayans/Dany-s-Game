@@ -32,6 +32,7 @@ export interface GameState {
   pos: number;
   wrong: boolean;
   wrongIndex: number | null;
+  wrongCount: number;
   wrongEmoji: string;
   wrongMessage: string;
   success: boolean;

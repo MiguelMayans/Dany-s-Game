@@ -2,6 +2,7 @@ import Key from './ui/Key';
 
 interface Props {
   onKeyPress: (k: string) => void;
+  hintLetter?: string | null;
 }
 
 const rows = [
@@ -10,7 +11,7 @@ const rows = [
   ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
 ];
 
-export default function OnScreenKeyboard({ onKeyPress }: Props) {
+export default function OnScreenKeyboard({ onKeyPress, hintLetter = null }: Props) {
   let colorIdx = 0;
 
   return (
@@ -26,6 +27,7 @@ export default function OnScreenKeyboard({ onKeyPress }: Props) {
               letter={letter}
               onPress={onKeyPress}
               colorIndex={colorIdx++}
+              hint={!!hintLetter && letter === hintLetter}
             />
           ))}
         </div>
