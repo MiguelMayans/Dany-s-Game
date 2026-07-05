@@ -1,15 +1,19 @@
 import Button from './ui/Button';
 import Card from './ui/Card';
 import Mascot from './ui/Mascot';
+import { ACHIEVEMENTS } from '../types/game';
 
 interface Props {
   onStartLevel1: () => void;
   onStartLevel2: () => void;
   bestStreak: number;
   totalWords: number;
+  achievements: string[];
 }
 
-export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, totalWords }: Props) {
+export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, totalWords, achievements }: Props) {
+  const earned = ACHIEVEMENTS.filter(a => achievements.includes(a.id));
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card padding="md" maxWidth="md" className="text-center">
@@ -46,6 +50,23 @@ export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, 
             <span className="text-sm font-bold text-dan-muted uppercase tracking-wide">mejor racha</span>
           </div>
         </div>
+
+        {earned.length > 0 && (
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <span className="text-sm font-bold text-dan-muted uppercase tracking-wide">Tus logros</span>
+            <div className="flex flex-wrap justify-center gap-2">
+              {earned.map(a => (
+                <span
+                  key={a.id}
+                  title={a.name}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border-[4px] border-dan-border bg-white text-2xl shadow-[0_3px_0_var(--color-dan-border)]"
+                >
+                  {a.emoji}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );

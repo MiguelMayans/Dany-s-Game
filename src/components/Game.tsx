@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import Feedback from './Feedback';
 import ProgressBar from './ProgressBar';
@@ -6,15 +6,37 @@ import StartScreen from './StartScreen';
 import VictoryScreen from './VictoryScreen';
 import { useGame } from '../hooks/useGame';
 import { findWordEntry } from '../utils/gameHelpers';
-import { markUserInteraction } from '../utils/sounds';
+import { markUserInteraction, setMuted } from '../utils/sounds';
 import { speakWord } from '../utils/speech';
 import Card from './ui/Card';
 import Letter from './ui/Letter';
 import Button from './ui/Button';
 import Mascot from './ui/Mascot';
+import type { MascotMood } from './ui/Mascot';
+
+const MUTE_KEY = 'dan-game-muted';
 
 export default function Game() {
   const { state, startLevel, handleKeyPress, goMenu } = useGame();
+
+  const [muted, setMutedState] = useState(() => {
+    try {
+      return localStorage.getItem(MUTE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    setMuted(muted);
+    try {
+      localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+    } catch {
+      // ignore
+    }
+  }, [muted]);
+
+  const toggleMute = () => setMutedState(m => !m);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -42,6 +64,7 @@ export default function Game() {
         }}
         bestStreak={state.bestStreak}
         totalWords={state.totalWordsToday}
+        achievements={Array.from(state.achievements)}
       />
     );
   }
@@ -62,18 +85,37 @@ export default function Game() {
   const hintLetter =
     state.wrongCount >= 3 && state.pos < state.word.length ? state.word[state.pos] : null;
 
+  const totoMood: MascotMood = state.success
+    ? 'celebrate'
+    : state.wrong
+      ? 'sad'
+      : state.poppedIndex !== null
+        ? 'happy'
+        : 'idle';
+
   return (
     <div className="flex min-h-screen items-center justify-center p-3 sm:p-4">
       <Card padding="sm" maxWidth="4xl" className="flex w-[96vw] flex-col items-center gap-3 sm:gap-4">
         {/* Header */}
         <div className="flex w-full items-center justify-between gap-4">
           <div className="inline-flex items-center gap-2 rounded-full border-[4px] border-dan-border bg-linear-135 from-dan-yellow to-dan-orange px-4 py-2 text-sm sm:text-base font-extrabold text-white text-shadow-soft shadow-[0_4px_0_var(--color-dan-border)]">
-            <Mascot size="sm" animate={false} />
+            <Mascot size="sm" mood={totoMood} />
             <span>Palabras con TOTO</span>
           </div>
-          <Button variant="coral" size="md" onClick={goMenu} className="!px-4 !py-2 !text-base">
-            Menú
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={muted ? 'Activar sonido' : 'Silenciar'}
+              aria-pressed={muted}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border-[4px] border-dan-border bg-dan-card text-xl shadow-[0_4px_0_var(--color-dan-border)] press-effect"
+            >
+              {muted ? '🔇' : '🔊'}
+            </button>
+            <Button variant="coral" size="md" onClick={goMenu} className="!px-4 !py-2 !text-base">
+              Menú
+            </Button>
+          </div>
         </div>
 
         <Feedback
@@ -128,11 +170,14 @@ export default function Game() {
             else if (isCurrentWrong) letterState = 'wrong';
             else if (isCorrect) letterState = 'correct';
 
+            const isActive = i === state.pos && !state.wrong && !isPopped && !state.success;
+
             return (
               <Letter
                 key={i}
                 char={ch}
                 state={letterState}
+                isActive={isActive}
               >
                 {state.sparks
                   .filter(s => s.letterIndex === i)

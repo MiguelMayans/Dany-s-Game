@@ -1,3 +1,5 @@
+import { isMuted } from './sounds';
+
 let voicesReady = false;
 let spanishVoice: SpeechSynthesisVoice | null = null;
 
@@ -55,6 +57,7 @@ function ensureVoices(): void {
 
 function speak(text: string, rate = 0.9, pitch = 1.05): void {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  if (isMuted()) return;
 
   try {
     ensureVoices();

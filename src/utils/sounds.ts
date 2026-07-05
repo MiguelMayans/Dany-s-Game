@@ -3,6 +3,15 @@
 
 let audioCtx: AudioContext | null = null;
 let userInteracted = false;
+let muted = false;
+
+export function isMuted(): boolean {
+  return muted;
+}
+
+export function setMuted(v: boolean): void {
+  muted = v;
+}
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -269,6 +278,7 @@ const PENTATONIC_HZ = [262, 294, 330, 392, 440, 523, 587, 659];
 
 /** Play a xylophone-style note that rises with each correct letter typed. */
 export function playCorrectNote(position: number): void {
+  if (muted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
@@ -294,6 +304,7 @@ export function playCorrectNote(position: number): void {
 
 /** Cartoon spring "boing". */
 export function playWrongSound(): void {
+  if (muted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
@@ -319,6 +330,7 @@ export function playWrongSound(): void {
 
 /** Pick one of 4 distinct celebration jingles at random. */
 export function playSuccessJingle(): void {
+  if (muted) return;
   const jingles = [jingleBells, jingleFanfare, jingleSparkle, jinglePop];
   try {
     jingles[Math.floor(Math.random() * jingles.length)]();

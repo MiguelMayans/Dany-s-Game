@@ -3,10 +3,11 @@ import type { ReactNode } from 'react';
 interface LetterProps {
   char: string;
   state?: 'default' | 'correct' | 'wrong' | 'pop';
+  isActive?: boolean;
   children?: ReactNode;
 }
 
-export default function Letter({ char, state = 'default', children }: LetterProps) {
+export default function Letter({ char, state = 'default', isActive = false, children }: LetterProps) {
   const baseClasses = [
     'relative inline-flex items-center justify-center',
     'min-w-[clamp(48px,9vw,120px)] h-[clamp(72px,14vw,140px)]',
@@ -24,8 +25,18 @@ export default function Letter({ char, state = 'default', children }: LetterProp
     pop: 'bg-dan-success text-dan-success-text animate-pop',
   };
 
+  const showActive = isActive && state === 'default';
+
   return (
-    <span className={[...baseClasses, stateClasses[state]].join(' ')}>
+    <span className={[...baseClasses, stateClasses[state], showActive ? 'animate-active-pulse' : ''].join(' ')}>
+      {showActive && (
+        <span
+          className="absolute -top-7 left-1/2 -translate-x-1/2 text-2xl animate-bounce-gentle"
+          aria-hidden="true"
+        >
+          ▼
+        </span>
+      )}
       {char.toUpperCase()}
       {children}
     </span>

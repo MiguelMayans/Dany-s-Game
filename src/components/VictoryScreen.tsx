@@ -22,7 +22,7 @@ export default function VictoryScreen({
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card padding="md" maxWidth="md" className="text-center">
         <div className="mb-4 flex justify-center">
-          <Mascot size="xl" />
+          <Mascot size="xl" mood="celebrate" />
         </div>
 
         <div className="mb-2 text-8xl leading-none animate-trophy-bounce">🏆</div>
