@@ -6,7 +6,7 @@ import StartScreen from './StartScreen';
 import VictoryScreen from './VictoryScreen';
 import { useGame } from '../hooks/useGame';
 import { findWordEntry } from '../utils/gameHelpers';
-import { markUserInteraction, setMuted } from '../utils/sounds';
+import { markUserInteraction, setMuted, isMuted } from '../utils/sounds';
 import { speakWord } from '../utils/speech';
 import Card from './ui/Card';
 import Letter from './ui/Letter';
@@ -40,7 +40,24 @@ export default function Game() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (!isMuted()) {
+          // no-op, kept for future audio cue
+        }
+        goMenu();
+        return;
+      }
       const k = e.key.toLowerCase();
+      if (state.screen === 'menu') {
+        if (k === '1') {
+          markUserInteraction();
+          startLevel('level1');
+        } else if (k === '2') {
+          markUserInteraction();
+          startLevel('level2');
+        }
+        return;
+      }
       if (/^[a-zñ]$/.test(k)) {
         markUserInteraction();
         handleKeyPress(k);
@@ -49,7 +66,7 @@ export default function Game() {
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handleKeyPress]);
+  }, [handleKeyPress, state.screen, startLevel, goMenu]);
 
   if (state.screen === 'menu') {
     return (
