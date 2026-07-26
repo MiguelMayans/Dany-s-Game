@@ -44,6 +44,7 @@ export function markUserInteraction(): void {
   if (ctx && ctx.state === 'suspended') {
     ctx.resume().catch(() => { /* ignore */ });
   }
+  startBackgroundMusic();
 }
 
 function makeCompressor(ctx: AudioContext): DynamicsCompressorNode {
@@ -337,6 +338,70 @@ export function playSuccessJingle(): void {
   } catch {
     if (import.meta.env.DEV) {
       console.warn('[sounds] playSuccessJingle failed');
+    }
+  }
+}
+
+// ─── Background music: gentle cheerful loop ───────────────────────────────────
+// Soft pentatonic melody + bass + light percussion, low volume so it stays
+// in the background. Starts on first user interaction and respects mute.
+
+let musicPlaying = false;
+let musicOut: AudioNode | null = null;
+let nextBeatTime = 0;
+let beatIndex = 0;
+
+const BPM = 96;
+const EIGHTH = 60 / BPM / 2; // eighth-note duration in seconds
+
+// C major pentatonic melody (8 eighth notes) and a simple bass line (4 half notes).
+const MELODY = [523, 587, 659, 784, 659, 587, 523, 392]; // C5 D5 E5 G5 E5 D5 C5 G4
+const BASS = [262, 196, 220, 196]; // C4 G3 A3 G3
+
+function scheduleMusic(): void {
+  const ctx = getAudioContext();
+  if (!ctx || !musicOut) return;
+
+  const ahead = 0.25; // schedule a bit in the future for smooth playback
+  while (nextBeatTime < ctx.currentTime + ahead) {
+    const step = beatIndex % MELODY.length;
+    const t = nextBeatTime;
+
+    if (!muted) {
+      // Melody: soft xylophone-ish bell.
+      bell(ctx, musicOut, MELODY[step], t, EIGHTH * 1.9, 0.07);
+
+      // Bass: soft low bell on every other eighth.
+      if (step % 2 === 0) {
+        bell(ctx, musicOut, BASS[(beatIndex >> 1) % BASS.length], t, EIGHTH * 3.6, 0.05);
+      }
+
+      // Gentle hi-hat on the off-beats.
+      if (step % 2 === 1) {
+        hihat(ctx, musicOut, t, 0.03);
+      }
+    }
+
+    nextBeatTime += EIGHTH;
+    beatIndex++;
+  }
+}
+
+/** Start the background music loop (idempotent). Call after a user gesture. */
+export function startBackgroundMusic(): void {
+  if (musicPlaying) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  try {
+    musicOut = makeCompressor(ctx);
+    nextBeatTime = ctx.currentTime + 0.15;
+    musicPlaying = true;
+    // Keep the interval alive; scheduling checks `muted` each beat.
+    window.setInterval(scheduleMusic, 90);
+  } catch {
+    if (import.meta.env.DEV) {
+      console.warn('[sounds] startBackgroundMusic failed');
     }
   }
 }

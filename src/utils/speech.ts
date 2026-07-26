@@ -2,6 +2,8 @@ import { isMuted } from './sounds';
 
 let voicesReady = false;
 let spanishVoice: SpeechSynthesisVoice | null = null;
+// Keep a reference so the utterance isn't garbage-collected mid-speech (Chrome bug).
+let currentUtterance: SpeechSynthesisUtterance | null = null;
 
 function isSpanish(voice: SpeechSynthesisVoice): boolean {
   return voice.lang.toLowerCase().startsWith('es');
@@ -78,6 +80,13 @@ function speak(text: string, rate = 0.9, pitch = 1.05): void {
       }
     };
 
+    currentUtterance = utterance;
+    utterance.onend = () => {
+      if (currentUtterance === utterance) currentUtterance = null;
+    };
+
+    // Some browsers pause synthesis (e.g. after tab switch); resume before speaking.
+    window.speechSynthesis.resume();
     window.speechSynthesis.speak(utterance);
   } catch (error) {
     if (import.meta.env.DEV) {
