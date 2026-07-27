@@ -8,10 +8,11 @@ interface Props {
   onStartLevel2: () => void;
   bestStreak: number;
   totalWords: number;
+  totalStars: number;
   achievements: string[];
 }
 
-export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, totalWords, achievements }: Props) {
+export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, totalWords, totalStars, achievements }: Props) {
   const earned = ACHIEVEMENTS.filter(a => achievements.includes(a.id));
 
   return (
@@ -40,10 +41,14 @@ export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, 
           </Button>
         </div>
 
-        <div className="mt-8 flex justify-center gap-8">
+        <div className="mt-8 flex justify-center gap-6">
           <div className="flex flex-col items-center gap-1">
             <span className="text-4xl font-black text-dan-coral">{totalWords}</span>
             <span className="text-sm font-bold text-dan-muted uppercase tracking-wide">hoy</span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-4xl font-black text-dan-coral">{totalStars}</span>
+            <span className="text-sm font-bold text-dan-muted uppercase tracking-wide">⭐ estrellas</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <span className="text-4xl font-black text-dan-coral">{bestStreak}</span>

@@ -7,6 +7,7 @@ interface Props {
   streak: number;
   bestStreak: number;
   totalWords: number;
+  totalStars: number;
   newAchievements: string[];
   onGoMenu: () => void;
 }
@@ -15,6 +16,7 @@ export default function VictoryScreen({
   streak,
   bestStreak,
   totalWords,
+  totalStars,
   newAchievements,
   onGoMenu,
 }: Props) {
@@ -34,6 +36,7 @@ export default function VictoryScreen({
           <span className="rounded-xl bg-dan-yellow/20 px-4 py-2">Racha: {streak}</span>
           <span className="rounded-xl bg-dan-cyan/20 px-4 py-2">Mejor: {bestStreak}</span>
           <span className="rounded-xl bg-dan-green/20 px-4 py-2">Hoy: {totalWords}</span>
+          <span className="rounded-xl bg-dan-coral/20 px-4 py-2">⭐ {totalStars}</span>
         </div>
 
         {newAchievements.length > 0 && (

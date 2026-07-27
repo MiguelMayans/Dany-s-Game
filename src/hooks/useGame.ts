@@ -3,7 +3,7 @@ import type { Level, GameState, Spark } from '../types/game';
 import { ACHIEVEMENTS } from '../types/game';
 import { getWordsForLevel, shuffleArray } from '../utils/gameHelpers';
 import { playCorrectNote, playWrongSound } from '../utils/sounds';
-import { loadVoices, speakWord } from '../utils/speech';
+import { loadVoices, speakWord, speakLetter } from '../utils/speech';
 import { gameReducer, initialState } from '../reducers/gameReducer';
 
 const STORAGE_KEY = 'dan-game-progress-v2';
@@ -27,6 +27,7 @@ interface SavedProgress {
   streak: number;
   bestStreak: number;
   totalWordsToday: number;
+  totalStars: number;
   achievements: string[];
 }
 
@@ -40,6 +41,7 @@ function serializeState(state: GameState): string {
     streak: state.streak,
     bestStreak: state.bestStreak,
     totalWordsToday: state.totalWordsToday,
+    totalStars: state.totalStars,
     achievements: Array.from(state.achievements),
   });
 }
@@ -53,6 +55,7 @@ function deserializeState(raw: string | null): Partial<GameState> | null {
       streak: data.streak ?? 0,
       bestStreak: data.bestStreak ?? 0,
       totalWordsToday: data.date === today ? data.totalWordsToday ?? 0 : 0,
+      totalStars: data.date === today ? data.totalStars ?? 0 : 0,
       achievements: new Set(data.achievements ?? []),
     };
   } catch {
@@ -148,6 +151,12 @@ export function useGame() {
 
     if (key === expected) {
       playCorrectNote(current.pos);
+      // Say the letter name aloud (skip on the final letter: the success
+      // jingle + phrase take over to avoid overlapping voices).
+      const isComplete = current.pos + 1 >= current.word.length;
+      if (!isComplete) {
+        speakLetter(key);
+      }
       const newSparks: Spark[] = Array.from({ length: 4 }, () => ({
         id: sparkIdRef.current++,
         letterIndex: current.pos,

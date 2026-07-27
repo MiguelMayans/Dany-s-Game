@@ -81,6 +81,7 @@ export default function Game() {
         }}
         bestStreak={state.bestStreak}
         totalWords={state.totalWordsToday}
+        totalStars={state.totalStars}
         achievements={Array.from(state.achievements)}
       />
     );
@@ -92,6 +93,7 @@ export default function Game() {
         streak={state.streak}
         bestStreak={state.bestStreak}
         totalWords={state.totalWordsToday}
+        totalStars={state.totalStars}
         newAchievements={state.newAchievements}
         onGoMenu={goMenu}
       />
@@ -141,6 +143,8 @@ export default function Game() {
           bestStreak={state.bestStreak}
           totalWords={state.totalWordsToday}
           newAchievements={state.newAchievements}
+          stars={state.lastStars}
+          totalStars={state.totalStars}
         />
 
         <ProgressBar current={state.currentIndex} total={state.levelWords.length} />

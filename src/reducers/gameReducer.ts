@@ -18,6 +18,9 @@ export const initialState: GameState = {
   streak: 0,
   bestStreak: 0,
   totalWordsToday: 0,
+  wordMistakes: 0,
+  lastStars: 0,
+  totalStars: 0,
   achievements: new Set(),
   newAchievements: [],
 };
@@ -36,6 +39,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         streak: state.streak,
         bestStreak: state.bestStreak,
         totalWordsToday: state.totalWordsToday,
+        totalStars: state.totalStars,
       };
     }
     case 'KEY_PRESS': {
@@ -47,6 +51,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         const nextPos = state.pos + 1;
         const isComplete = nextPos >= state.word.length;
         const newStreak = isComplete ? state.streak + 1 : state.streak;
+        // 0 fallos → 3⭐, 1-2 fallos → 2⭐, 3+ fallos → 1⭐
+        const stars = isComplete
+          ? state.wordMistakes === 0
+            ? 3
+            : state.wordMistakes <= 2
+              ? 2
+              : 1
+          : state.lastStars;
         return {
           ...state,
           pos: nextPos,
@@ -59,6 +71,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           streak: newStreak,
           bestStreak: isComplete ? Math.max(state.bestStreak, newStreak) : state.bestStreak,
           totalWordsToday: isComplete ? state.totalWordsToday + 1 : state.totalWordsToday,
+          lastStars: stars,
+          totalStars: isComplete ? state.totalStars + stars : state.totalStars,
         };
       }
 
@@ -68,6 +82,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         wrong: true,
         wrongIndex: state.pos,
         wrongCount: state.wrongCount + 1,
+        wordMistakes: state.wordMistakes + 1,
         wrongEmoji: action.wrongEmoji ?? state.wrongEmoji,
         wrongMessage: action.wrongMessage ?? state.wrongMessage,
       };
@@ -99,6 +114,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         wrong: false,
         wrongIndex: null,
         wrongCount: 0,
+        wordMistakes: 0,
         success: false,
         poppedIndex: null,
         sparks: [],

@@ -10,6 +10,8 @@ interface Props {
   bestStreak: number;
   totalWords: number;
   newAchievements: string[];
+  stars: number;
+  totalStars: number;
 }
 
 const CONFETTI_COLORS = ['#ffd166', '#ff6b6b', '#06d6a0', '#4cc9f0', '#ff4757'];
@@ -22,7 +24,7 @@ const SUCCESS_MESSAGES = [
   '¡Eres un crack, Dani!',
 ];
 
-export default function Feedback({ success, streak, bestStreak, totalWords, newAchievements }: Props) {
+export default function Feedback({ success, streak, bestStreak, totalWords, newAchievements, stars, totalStars }: Props) {
   const message = SUCCESS_MESSAGES[(totalWords + streak) % SUCCESS_MESSAGES.length];
 
   useEffect(() => {
@@ -93,10 +95,24 @@ export default function Feedback({ success, streak, bestStreak, totalWords, newA
           {message} <span className="inline-block animate-bounce-gentle">🐻</span>
         </div>
 
+        <div className="mt-3 flex justify-center gap-1 text-4xl sm:text-5xl" aria-label={`${stars} de 3 estrellas`}>
+          {[0, 1, 2].map(i => (
+            <span
+              key={i}
+              className={i < stars ? 'animate-badge-pop' : 'opacity-30 grayscale'}
+              style={i < stars ? { animationDelay: `${i * 120}ms` } : undefined}
+              aria-hidden="true"
+            >
+              ⭐
+            </span>
+          ))}
+        </div>
+
         <div className="mt-4 flex flex-wrap justify-center gap-2 text-base sm:text-xl font-bold">
           <span className="rounded-xl bg-black/15 px-4 py-1">Racha: {streak}</span>
           <span className="rounded-xl bg-black/15 px-4 py-1">Mejor: {bestStreak}</span>
           <span className="rounded-xl bg-black/15 px-4 py-1">Hoy: {totalWords}</span>
+          <span className="rounded-xl bg-black/15 px-4 py-1">⭐ {totalStars}</span>
         </div>
 
         {newAchievements.length > 0 && (

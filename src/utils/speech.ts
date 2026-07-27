@@ -99,6 +99,10 @@ export function speakWord(word: string): void {
   speak(word, 0.85, 1.05);
 }
 
+export function speakLetter(letter: string): void {
+  speak(letter, 0.95, 1.05);
+}
+
 export function speakPhrase(phrase: string): void {
   speak(phrase, 0.9, 1.1);
 }

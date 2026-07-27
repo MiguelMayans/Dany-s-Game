@@ -43,6 +43,9 @@ export interface GameState {
   streak: number;
   bestStreak: number;
   totalWordsToday: number;
+  wordMistakes: number;
+  lastStars: number;
+  totalStars: number;
   achievements: Set<string>;
   newAchievements: string[];
 }
