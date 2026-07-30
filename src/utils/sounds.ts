@@ -343,8 +343,9 @@ export function playSuccessJingle(): void {
 }
 
 // ─── Background music: gentle cheerful loop ───────────────────────────────────
-// Soft pentatonic melody + bass + light percussion, low volume so it stays
-// in the background. Starts on first user interaction and respects mute.
+// 4-bar loop (32 eighth notes) over a I–vi–IV–V chord progression in C major,
+// with a pentatonic melody, soft triad chords, a low bass root and light
+// percussion. Low volume so it stays in the background; respects mute.
 
 let musicPlaying = false;
 let musicOut: AudioNode | null = null;
@@ -353,10 +354,31 @@ let beatIndex = 0;
 
 const BPM = 96;
 const EIGHTH = 60 / BPM / 2; // eighth-note duration in seconds
+const EIGHTHS_PER_BAR = 8;
 
-// C major pentatonic melody (8 eighth notes) and a simple bass line (4 half notes).
-const MELODY = [523, 587, 659, 784, 659, 587, 523, 392]; // C5 D5 E5 G5 E5 D5 C5 G4
-const BASS = [262, 196, 220, 196]; // C4 G3 A3 G3
+// 4-bar pentatonic melody (all notes from C major pentatonic, so it always
+// sounds consonant over the chords below).
+const MELODY = [
+  // Bar 1 (C)
+  523, 659, 784, 659, 523, 392, 523, 587,
+  // Bar 2 (Am)
+  440, 523, 659, 523, 440, 330, 440, 523,
+  // Bar 3 (F)
+  440, 523, 587, 659, 587, 523, 440, 392,
+  // Bar 4 (G)
+  392, 587, 784, 587, 659, 587, 440, 392,
+];
+
+// One triad per bar: C, Am, F, G (I–vi–IV–V).
+const CHORDS = [
+  [262, 330, 392], // C
+  [220, 262, 330], // Am
+  [175, 220, 262], // F
+  [196, 247, 294], // G
+];
+
+// Bass root per bar, one octave below the chord root: C3 A2 F2 G2.
+const BASS_ROOT = [131, 110, 87, 98];
 
 function scheduleMusic(): void {
   const ctx = getAudioContext();
@@ -364,16 +386,24 @@ function scheduleMusic(): void {
 
   const ahead = 0.25; // schedule a bit in the future for smooth playback
   while (nextBeatTime < ctx.currentTime + ahead) {
-    const step = beatIndex % MELODY.length;
+    const step = beatIndex % MELODY.length; // 0..31
+    const bar = Math.floor(step / EIGHTHS_PER_BAR); // 0..3
     const t = nextBeatTime;
 
     if (!muted) {
       // Melody: soft xylophone-ish bell.
-      bell(ctx, musicOut, MELODY[step], t, EIGHTH * 1.9, 0.07);
+      bell(ctx, musicOut, MELODY[step], t, EIGHTH * 1.9, 0.06);
 
-      // Bass: soft low bell on every other eighth.
-      if (step % 2 === 0) {
-        bell(ctx, musicOut, BASS[(beatIndex >> 1) % BASS.length], t, EIGHTH * 3.6, 0.05);
+      // Chord on beats 1 and 5 of each bar (soft, sustained).
+      if (step % EIGHTHS_PER_BAR === 0 || step % EIGHTHS_PER_BAR === 4) {
+        for (const note of CHORDS[bar]) {
+          bell(ctx, musicOut, note, t, EIGHTH * 3.6, 0.03);
+        }
+      }
+
+      // Bass root at the start of each bar.
+      if (step % EIGHTHS_PER_BAR === 0) {
+        bell(ctx, musicOut, BASS_ROOT[bar], t, EIGHTH * 7, 0.05);
       }
 
       // Gentle hi-hat on the off-beats.

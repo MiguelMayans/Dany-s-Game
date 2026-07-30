@@ -4,6 +4,22 @@ let voicesReady = false;
 let spanishVoice: SpeechSynthesisVoice | null = null;
 // Keep a reference so the utterance isn't garbage-collected mid-speech (Chrome bug).
 let currentUtterance: SpeechSynthesisUtterance | null = null;
+// Pending delayed speak (cancel+speak in the same tick is unreliable in Chrome).
+let speakTimer: number | null = null;
+let watchdogStarted = false;
+
+// Chrome can silently pause synthesis after inactivity; nudge it periodically.
+function startWatchdog(): void {
+  if (watchdogStarted || typeof window === 'undefined' || !window.speechSynthesis) return;
+  watchdogStarted = true;
+  window.setInterval(() => {
+    try {
+      window.speechSynthesis.resume();
+    } catch {
+      /* ignore */
+    }
+  }, 8000);
+}
 
 function isSpanish(voice: SpeechSynthesisVoice): boolean {
   return voice.lang.toLowerCase().startsWith('es');
@@ -38,6 +54,7 @@ function refreshVoices(): void {
 export function loadVoices(): void {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
+  startWatchdog();
   refreshVoices();
 
   window.speechSynthesis.onvoiceschanged = () => {
@@ -63,7 +80,12 @@ function speak(text: string, rate = 0.9, pitch = 1.05): void {
 
   try {
     ensureVoices();
-    window.speechSynthesis.cancel();
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    if (speakTimer !== null) {
+      clearTimeout(speakTimer);
+      speakTimer = null;
+    }
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'es-ES';
@@ -85,9 +107,13 @@ function speak(text: string, rate = 0.9, pitch = 1.05): void {
       if (currentUtterance === utterance) currentUtterance = null;
     };
 
-    // Some browsers pause synthesis (e.g. after tab switch); resume before speaking.
-    window.speechSynthesis.resume();
-    window.speechSynthesis.speak(utterance);
+    // Small delay after cancel(): speaking in the same tick as cancel() can
+    // silently drop the utterance in some browsers.
+    speakTimer = window.setTimeout(() => {
+      speakTimer = null;
+      synth.resume();
+      synth.speak(utterance);
+    }, 40);
   } catch (error) {
     if (import.meta.env.DEV) {
       console.warn('[speech] speak failed:', error);
