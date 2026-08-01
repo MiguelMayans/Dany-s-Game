@@ -26,15 +26,9 @@ function isSpanish(voice: SpeechSynthesisVoice): boolean {
 }
 
 function pickSpanishVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  const preferred = voices.find(
-    v =>
-      isSpanish(v) &&
-      (v.name.toLowerCase().includes('google') ||
-        v.name.toLowerCase().includes('maría') ||
-        v.name.toLowerCase().includes('monica') ||
-        v.name.toLowerCase().includes('helena')),
-  );
-  return preferred ?? voices.find(isSpanish) ?? null;
+  const spanish = voices.filter(isSpanish);
+  // Prefer a locally-installed voice: network voices (e.g. Google's) can fail silently.
+  return spanish.find(v => v.localService) ?? spanish[0] ?? null;
 }
 
 function refreshVoices(): void {
@@ -65,6 +59,11 @@ export function loadVoices(): void {
   if (!voicesReady) {
     setTimeout(refreshVoices, 100);
     setTimeout(refreshVoices, 500);
+    if (import.meta.env.DEV && window.speechSynthesis.getVoices().length === 0) {
+      console.warn(
+        '[speech] no TTS voices found. On Linux you may need speech-dispatcher + espeak-ng.',
+      );
+    }
   }
 }
 
@@ -87,24 +86,37 @@ function speak(text: string, rate = 0.9, pitch = 1.05): void {
       speakTimer = null;
     }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'es-ES';
-    utterance.rate = rate;
-    utterance.pitch = pitch;
+    const make = (voice: SpeechSynthesisVoice | null): SpeechSynthesisUtterance => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'es-ES';
+      u.rate = rate;
+      u.pitch = pitch;
+      if (voice) u.voice = voice;
+      return u;
+    };
 
-    if (spanishVoice) {
-      utterance.voice = spanishVoice;
-    }
-
+    const utterance = make(spanishVoice);
+    currentUtterance = utterance;
+    utterance.onend = () => {
+      if (currentUtterance === utterance) currentUtterance = null;
+    };
     utterance.onerror = event => {
       if (import.meta.env.DEV) {
         console.warn('[speech] error:', event.error);
       }
-    };
-
-    currentUtterance = utterance;
-    utterance.onend = () => {
-      if (currentUtterance === utterance) currentUtterance = null;
+      // If the chosen voice failed (e.g. a network voice), retry once with the default voice.
+      if (utterance.voice && event.error !== 'canceled' && event.error !== 'interrupted') {
+        try {
+          const retry = make(null);
+          currentUtterance = retry;
+          retry.onend = () => {
+            if (currentUtterance === retry) currentUtterance = null;
+          };
+          synth.speak(retry);
+        } catch {
+          /* ignore */
+        }
+      }
     };
 
     // Small delay after cancel(): speaking in the same tick as cancel() can
