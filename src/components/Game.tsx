@@ -6,7 +6,7 @@ import StartScreen from './StartScreen';
 import VictoryScreen from './VictoryScreen';
 import { useGame } from '../hooks/useGame';
 import { findWordEntry } from '../utils/gameHelpers';
-import { markUserInteraction, setMuted, isMuted } from '../utils/sounds';
+import { markUserInteraction, setMuted } from '../utils/sounds';
 import { speakWord } from '../utils/speech';
 import Card from './ui/Card';
 import Letter from './ui/Letter';
@@ -41,9 +41,6 @@ export default function Game() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (!isMuted()) {
-          // no-op, kept for future audio cue
-        }
         goMenu();
         return;
       }
@@ -58,6 +55,14 @@ export default function Game() {
         }
         return;
       }
+      if (state.screen !== 'playing') return;
+      // Spacebar: re-speak the current word aloud.
+      if (e.key === ' ') {
+        e.preventDefault();
+        markUserInteraction();
+        speakWord(state.word);
+        return;
+      }
       if (/^[a-zñ]$/.test(k)) {
         markUserInteraction();
         handleKeyPress(k);
@@ -66,7 +71,7 @@ export default function Game() {
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handleKeyPress, state.screen, startLevel, goMenu]);
+  }, [handleKeyPress, state.screen, state.word, startLevel, goMenu]);
 
   if (state.screen === 'menu') {
     return (
@@ -119,7 +124,7 @@ export default function Game() {
         <div className="flex w-full items-center justify-between gap-4">
           <div className="inline-flex items-center gap-2 rounded-full border-[4px] border-dan-border bg-linear-135 from-dan-yellow to-dan-orange px-4 py-2 text-sm sm:text-base font-extrabold text-white text-shadow-soft shadow-[0_4px_0_var(--color-dan-border)]">
             <Mascot size="sm" mood={totoMood} />
-            <span>Palabras con TOTO</span>
+            <span>Palabras con TOTO · {state.level === 'level2' ? 'Nivel 2' : 'Nivel 1'}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
