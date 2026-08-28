@@ -1,7 +1,9 @@
 import Button from './ui/Button';
 import Card from './ui/Card';
 import Mascot from './ui/Mascot';
+import MuteButton from './ui/MuteButton';
 import { ACHIEVEMENTS } from '../types/game';
+import { words } from '../data/words';
 
 interface Props {
   onStartLevel1: () => void;
@@ -10,14 +12,27 @@ interface Props {
   totalWords: number;
   totalStars: number;
   achievements: string[];
+  muted: boolean;
+  onToggleMute: () => void;
 }
 
-export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, totalWords, totalStars, achievements }: Props) {
+export default function StartScreen({
+  onStartLevel1,
+  onStartLevel2,
+  bestStreak,
+  totalWords,
+  totalStars,
+  achievements,
+  muted,
+  onToggleMute,
+}: Props) {
   const earned = ACHIEVEMENTS.filter(a => achievements.includes(a.id));
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="animate-screen-enter flex min-h-screen items-center justify-center p-4">
       <Card padding="md" maxWidth="md" className="text-center">
+        <MuteButton muted={muted} onToggle={onToggleMute} className="absolute right-4 top-4" />
+
         <div className="mb-2 flex flex-col items-center gap-2">
           <Mascot size="xl" />
           <div className="inline-flex items-center justify-center rounded-full border-[5px] border-dan-border bg-linear-135 from-dan-yellow to-dan-coral px-8 py-3 text-2xl font-extrabold text-white text-shadow-soft shadow-[0_6px_0_var(--color-dan-border),0_14px_30px_rgba(255,107,107,0.35)]">
@@ -32,12 +47,16 @@ export default function StartScreen({ onStartLevel1, onStartLevel2, bestStreak, 
         <div className="flex flex-col gap-4">
           <Button variant="yellow" size="xl" onClick={onStartLevel1} className="w-full">
             <span className="text-4xl">Nivel 1</span>
-            <span className="text-lg font-bold opacity-95">Palabras cortas y fáciles</span>
+            <span className="text-lg font-bold opacity-95">
+              Palabras cortas y fáciles · {words.level1.length} palabras
+            </span>
           </Button>
 
           <Button variant="blue" size="xl" onClick={onStartLevel2} className="w-full">
             <span className="text-4xl">Nivel 2</span>
-            <span className="text-lg font-bold opacity-95">Palabras un poco más difíciles</span>
+            <span className="text-lg font-bold opacity-95">
+              Palabras más difíciles · {words.level2.length} palabras
+            </span>
           </Button>
         </div>
 

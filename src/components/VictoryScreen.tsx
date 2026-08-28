@@ -2,6 +2,7 @@ import { ACHIEVEMENTS } from '../types/game';
 import Button from './ui/Button';
 import Card from './ui/Card';
 import Mascot from './ui/Mascot';
+import MuteButton from './ui/MuteButton';
 
 interface Props {
   streak: number;
@@ -10,6 +11,8 @@ interface Props {
   totalStars: number;
   newAchievements: string[];
   onGoMenu: () => void;
+  muted: boolean;
+  onToggleMute: () => void;
 }
 
 export default function VictoryScreen({
@@ -19,10 +22,14 @@ export default function VictoryScreen({
   totalStars,
   newAchievements,
   onGoMenu,
+  muted,
+  onToggleMute,
 }: Props) {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="animate-screen-enter flex min-h-screen items-center justify-center p-4">
       <Card padding="md" maxWidth="md" className="text-center">
+        <MuteButton muted={muted} onToggle={onToggleMute} className="absolute right-4 top-4" />
+
         <div className="mb-4 flex justify-center">
           <Mascot size="xl" mood="celebrate" />
         </div>

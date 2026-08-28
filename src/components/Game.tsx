@@ -12,6 +12,7 @@ import Card from './ui/Card';
 import Letter from './ui/Letter';
 import Button from './ui/Button';
 import Mascot from './ui/Mascot';
+import MuteButton from './ui/MuteButton';
 import type { MascotMood } from './ui/Mascot';
 
 const MUTE_KEY = 'dan-game-muted';
@@ -88,6 +89,8 @@ export default function Game() {
         totalWords={state.totalWordsToday}
         totalStars={state.totalStars}
         achievements={Array.from(state.achievements)}
+        muted={muted}
+        onToggleMute={toggleMute}
       />
     );
   }
@@ -101,6 +104,8 @@ export default function Game() {
         totalStars={state.totalStars}
         newAchievements={state.newAchievements}
         onGoMenu={goMenu}
+        muted={muted}
+        onToggleMute={toggleMute}
       />
     );
   }
@@ -118,7 +123,7 @@ export default function Game() {
         : 'idle';
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-3 sm:p-4">
+    <div className="animate-screen-enter flex min-h-screen items-center justify-center p-3 sm:p-4">
       <Card padding="sm" maxWidth="4xl" className="flex w-[96vw] flex-col items-center gap-3 sm:gap-4">
         {/* Header */}
         <div className="flex w-full items-center justify-between gap-4">
@@ -127,15 +132,7 @@ export default function Game() {
             <span>Palabras con TOTO · {state.level === 'level2' ? 'Nivel 2' : 'Nivel 1'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleMute}
-              aria-label={muted ? 'Activar sonido' : 'Silenciar'}
-              aria-pressed={muted}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border-[4px] border-dan-border bg-dan-card text-xl shadow-[0_4px_0_var(--color-dan-border)] press-effect"
-            >
-              {muted ? '🔇' : '🔊'}
-            </button>
+            <MuteButton muted={muted} onToggle={toggleMute} />
             <Button variant="coral" size="md" onClick={goMenu} className="!px-4 !py-2 !text-base">
               Menú
             </Button>
@@ -167,10 +164,11 @@ export default function Game() {
             <button
               type="button"
               onClick={() => speakWord(state.word)}
-              className="rounded-full border-[4px] border-dan-border bg-dan-cyan px-4 py-1.5 text-sm font-extrabold text-white shadow-[0_4px_0_var(--color-dan-border)] press-effect"
+              className="inline-flex items-center gap-2 rounded-full border-[4px] border-dan-border bg-linear-135 from-dan-cyan to-dan-blue px-6 py-2.5 text-lg font-extrabold text-white text-shadow-soft shadow-[0_5px_0_var(--color-dan-border)] press-effect"
               aria-label="Escuchar la palabra"
             >
-              🔊 Escuchar
+              <span className="inline-block animate-bounce-gentle" aria-hidden="true">🔊</span>
+              ¡Escucha la palabra!
             </button>
           </div>
         ) : null}
@@ -232,7 +230,8 @@ export default function Game() {
         />
 
         <p className="text-center text-sm font-bold text-dan-muted">
-          Pulsa las letras del teclado o usa el teclado del ordenador.
+          Pulsa las letras del teclado · <span className="text-dan-border">Espacio</span> repite la
+          palabra · <span className="text-dan-border">Esc</span> vuelve al menú
         </p>
       </Card>
     </div>
