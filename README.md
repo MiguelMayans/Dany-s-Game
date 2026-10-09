@@ -1,6 +1,6 @@
 # 🐻 Words with TOTO! — Dani's Game
 
-> A word game for learning, playing, and tapping letters with Toto the little bear.
+> A typing game for a 5-year-old: look at the sticker, listen to the word, and press its letters one by one with Toto the teddy bear.
 
 ![Made with love for Dani](https://img.shields.io/badge/made%20with-%F0%9F%92%9C%20for%20Dani-ff6b6b?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
@@ -9,126 +9,82 @@
 
 ---
 
-## 🎮 What is this?
+## 🎮 How it plays
 
-**Words with TOTO!** is a super colorful web game made so Dani can practice words in a fun way. Each word appears with an illustration, and Dani just has to press the letters in the right order. If correct, the letter explodes with sparkles and plays a musical note! If wrong… a friendly "boing" lets them know that wasn't it.
+1. Pick a game on the menu (or press **1–4**).
+2. A picture appears and Toto says the word out loud.
+3. The word is built from wooden alphabet blocks. Each correct key paints the next block and Toto says the letter's name ("eme", "uve"…).
+4. A wrong key just wobbles the block. After two misses on the same letter the right key glows on the keyboard and Toto says "busca la ge".
+5. Finished word: confetti, a fanfare, 1–3 stars and the word's sticker goes into the album.
+6. A round is **6 words**, then a summary with the stickers earned.
 
-There is confetti 🎉, achievements 🏆, streaks 🔥, and even an animated little bear named **Toto** who celebrates every victory.
+| Game | Words |
+|------|-------|
+| 🟡 **Cortitas** | Up to 4 letters (`sol`, `gato`, `mamá`) |
+| 🟢 **Medianas** | 5–6 letters (`perro`, `conejo`) |
+| 🔵 **Larguísimas** | 7+ letters (`mariposa`, `dinosaurio`) |
+| 🩷 **Secretas** | Up to 5 letters, but the blocks are blank: listen and spell it |
 
----
+Words are written correctly with accents (`papá`, `árbol`, `pingüino`), but accents never need to be typed: pressing `a` fills `á`. `ñ` is its own key.
 
-## ✨ Main Features
+Normal rounds prefer words whose sticker is still missing, so the album keeps growing; *Secretas* prefers words already practised.
 
-- 🐻 **Toto the bear** welcomes you and dances while you play.
-- 🖼️ **One image per word**: cars, animals, fruits, dinosaurs, rockets…
-- 🔊 **Sounds generated on the fly**: little bells when correct, "boing" when wrong, and fanfares when a word is completed.
-- 🗣️ **Text-to-speech**: every word is read aloud automatically and can be replayed.
-- ⌨️ **Two ways to play**: tap the on-screen keyboard or use the real keyboard.
-- 🏅 **Achievements and streaks**: Novice, Expert, Master, streaks of 3, 5, 10…
-- 💾 **Progress saved**: localStorage remembers how many words you completed today and your best streak.
-- 🌈 **Cartoon-style design**: thick borders, shadows, pastel colors, and lots of joy.
+### Stars
 
----
+| Mistakes in the word | Stars |
+|----|----|
+| 0 | ⭐⭐⭐ |
+| 1–2 | ⭐⭐ |
+| 3+ | ⭐ |
 
-## 🚀 How to Play
+The album keeps the best result per word.
 
-1. Open the page and say hi to Toto 🐻
-2. Choose a level:
-   - 🟡 **Level 1**: short and easy words (`sol`, `gato`, `casa`, `pelota`…)
-   - 🔵 **Level 2**: slightly harder words (`elefante`, `mariposa`, `cohete`, `dinosaurio`…)
-3. Look at the picture and listen to the word.
-4. Press the first letter, then the second… until the whole word is complete!
-5. When finished, Toto celebrates with confetti and music 🎊
+### Keyboard shortcuts
 
----
-
-## 🛠️ Tech Stack
-
-| Technology | What it's for |
-|------------|---------------|
-| ⚛️ **React 19** + **Vite** | The super-fast UI |
-| 🔷 **TypeScript** | To avoid typos in letters |
-| 🎨 **Tailwind CSS v4** | All the colors and animations |
-| 🎊 **canvas-confetti** | Confetti party time! |
-| 🎵 **Web Audio API** | Music and effects without sound files |
-| 🗣️ **Web Speech API** | Reads words aloud |
+- **1–4**: start a game from the menu
+- **Space / Enter**: hear the word again (or play another round on the summary)
+- **Esc**: back to the menu
 
 ---
 
-## 📦 Installation & Development
-
-> You need [Node.js](https://nodejs.org/) installed (recommended: v20 or higher) and preferably `pnpm`.
+## 🛠️ Development
 
 ```bash
-# 1. Install dependencies
 pnpm install
-
-# 2. Start the game in development mode
-pnpm dev
-
-# 3. Open the link shown (usually http://localhost:5173)
+pnpm dev       # http://localhost:5173
+pnpm test      # game logic tests (Vitest)
+pnpm build     # production build into /dist
+pnpm lint
 ```
 
-Other useful commands:
-
-```bash
-pnpm build     # Build the production version into /dist
-pnpm preview   # Preview the production build
-pnpm lint      # Check that everything is tidy
 ```
+src/
+├── data/
+│   ├── words.ts        # every word: text with accents, emoji, sticker colour
+│   └── levels.ts       # the 4 games and how a round is picked
+├── game/
+│   ├── state.ts        # reducer: key presses, stars, round flow
+│   ├── useGame.ts      # wires state to sound, voice and confetti
+│   ├── letters.ts      # accent-insensitive keys, Spanish letter names
+│   └── storage.ts      # progress + settings in localStorage
+├── audio/
+│   ├── sounds.ts       # synthesized effects + background music (Web Audio)
+│   └── speech.ts       # text-to-speech (Web Speech API)
+├── components/         # Toto (SVG), keyboard, sticker, stars, icons
+├── screens/            # Menu, Play, RoundEnd, Album
+└── index.css           # tokens, wooden blocks, animations
+```
+
+To add a word, add one line to `src/data/words.ts`: its level is chosen automatically from its length.
 
 ---
 
-## 🗂️ Project Structure
+## 💡 Notes for grown-ups
 
-```
-dans-game/
-├── public/images/          # 🖼️ Drawings for each word (SVG)
-├── src/
-│   ├── components/         # 🧩 Screens and buttons
-│   │   ├── Game.tsx        # Main game screen
-│   │   ├── StartScreen.tsx # Menu with Toto
-│   │   ├── VictoryScreen.tsx # Level completed!
-│   │   └── ui/             # Buttons, cards, letters, keyboard, and Toto
-│   ├── data/words.ts       # 📚 All words per level
-│   ├── hooks/useGame.ts    # 🎮 Game logic + saved progress
-│   ├── reducers/gameReducer.ts # Rules for what happens when letters are pressed
-│   ├── utils/
-│   │   ├── sounds.ts       # 🎼 Music and effects
-│   │   ├── speech.ts       # 🗣️ Voice
-│   │   └── gameHelpers.ts  # 🔧 Shuffle helpers
-│   ├── types/game.ts       # Types and achievements
-│   └── index.css           # 🌈 Colors and animations
-└── package.json
-```
-
----
-
-## 🎯 Achievements You Can Unlock
-
-| Achievement | How to earn it |
-|-------------|----------------|
-| 🥉 Novice | Complete 5 words in total |
-| 🥈 Expert | Complete 20 words in total |
-| 🥇 Master | Complete 50 words in total |
-| 🔥 Streak of 3 | 3 words in a row without mistakes |
-| ⚡ Streak of 5 | 5 words in a row without mistakes |
-| 🌟 Streak of 10 | 10 words in a row without mistakes |
-| 🏆 Best streak 10 | Reach a streak of 10 |
-
----
-
-## 💡 Notes for Grown-ups
-
-- The game saves progress in the browser (`localStorage`), so if Dani comes back tomorrow, today's word count is still there.
-- No external audio files: everything is generated with code, so no need to worry about missing files.
-- The game respects `prefers-reduced-motion`: if the system asks for less motion, animations turn off automatically.
-
----
-
-## 🧒 A Note for Dani
-
-> "Hi Dani! Toto has prepared a bunch of words for you. How many achievements can you unlock today? Let's play! 🐻🎉"
+- Two separate toggles: **music** and **voice + sounds**. The music quietens while Toto is talking.
+- The voice uses the browser's Spanish voice. On Linux you may need `speech-dispatcher` + `espeak-ng` (Chrome/Brave), or the voice will be silent.
+- Progress (album and today's word count) is saved in the browser's `localStorage`.
+- Respects `prefers-reduced-motion`.
 
 ---
 

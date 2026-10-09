@@ -2,6 +2,7 @@ declare module 'canvas-confetti' {
   interface ConfettiOptions {
     particleCount?: number;
     spread?: number;
+    angle?: number;
     startVelocity?: number;
     decay?: number;
     gravity?: number;
